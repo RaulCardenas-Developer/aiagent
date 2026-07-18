@@ -2,7 +2,7 @@ import os
 import argparse
 from dotenv import load_dotenv
 from openai import OpenAI
-
+from prompts import system_prompt
 
 
 load_dotenv()
@@ -24,12 +24,10 @@ parser.add_argument("user_prompt", type=str, help="User prompt")
 parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 args = parser.parse_args()
 # Now we can access `args.user_prompt`
-messages=[
-        {
-            "role": "user",
-            "content": args.user_prompt,
-        }
-    ]
+messages = [
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": args.user_prompt},
+]
 response = client.chat.completions.create(
     model = "openrouter/free",messages=messages)
     
@@ -39,7 +37,7 @@ if args.verbose == True:
         prompt_token = response.usage.prompt_tokens
         completion_tokens = response.usage.completion_tokens
 
-        print(f"User prompt: {args.user_prompt} \n"
+        print(f"User prompt: {args.user_prompt} \n" 
             f"Prompt tokens: {prompt_token} \n"
         f"Response tokens: {completion_tokens}")
 
