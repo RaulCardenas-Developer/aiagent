@@ -26,7 +26,11 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
     except Exception as e:
         return (f"Error: Cannot list '{target_dir}' as it is outside the permitted working directory")
 
-    schema_get_files_info = {
+    
+    return f'Success: "{directory}" is within the working directory'
+
+
+schema_get_files_info = {
     "type": "function",
     "function": {
         "name": "get_files_info",
@@ -42,7 +46,4 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         },
     },
     }
-    
-    
-    return f'Success: "{directory}" is within the working directory'
     
