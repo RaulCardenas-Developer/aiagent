@@ -34,41 +34,50 @@ def main():
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
-    response = client.chat.completions.create(
-        model = "openrouter/free",
-        messages=messages,
-        tools=available_functions
+    
+    iterations = False
+    for _ in range(20):
+    # call the model, handle responses, etc.
+        response = client.chat.completions.create(
+            model = "openrouter/free",
+            messages=messages,
+            tools=available_functions
         
         )
+        if args.verbose == True:
+            if response.usage != None:
+                prompt_token = response.usage.prompt_tokens
+                completion_tokens = response.usage.completion_tokens
 
-        
+                print(f"User prompt: {args.user_prompt} \n" 
+                    f"Prompt tokens: {prompt_token} \n"
+                f"Response tokens: {completion_tokens}")
 
-    if args.verbose == True:
-        if response.usage != None:
-            prompt_token = response.usage.prompt_tokens
-            completion_tokens = response.usage.completion_tokens
+            else:
+                raise RuntimeError("Failed API request")
 
-            print(f"User prompt: {args.user_prompt} \n" 
-                f"Prompt tokens: {prompt_token} \n"
-            f"Response tokens: {completion_tokens}")
+        message = response.choices[0].message
+        messages.append(message) 
+
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call, args.verbose)
+                if result_message["content"] == "":
+                    raise Exception("result content is empty")
+                if args.verbose == True:
+                    print(f"-> {result_message['content']}")
+                
+                messages.append(result_message)
 
         else:
-            raise RuntimeError("Failed API request")
-
-    message = response.choices[0].message  
-    if message.tool_calls:
-        for tool_call in message.tool_calls:
-            result_message = call_function(tool_call, args.verbose)
-            if result_message["content"] == "":
-                raise Exception("result content is empty")
-            if args.verbose == True:
-                print(f"-> {result_message['content']}")
-            
-                
-    else:
-        print(message.content)
-
-
+            print(message.content)
+            iterations = True 
+            break
+        
+    if not iterations:
+        print("not enough iterations")
+        exit(1)
+        
     
 
 if __name__ == "__main__":
