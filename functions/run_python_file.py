@@ -47,7 +47,7 @@ schema_run_python_file = {
     "type": "function",
     "function": {
         "name": "run_python_file",
-        "description": "executes the file as a program , returns the programs standard output and standard error ",
+        "description": "execute the python file as a program , returns the programs standard output and standard error ",
         "parameters": {
             "type": "object",
             "properties":{
