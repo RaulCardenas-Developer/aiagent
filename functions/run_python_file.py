@@ -52,8 +52,8 @@ schema_run_python_file = {
             "type": "object",
             "properties":{
                 "file_path": {
-                "type": "string",
-                "description":"the path to the file",
+                    "type": "string",
+                    "description":"the path to the file",
                 },
                 "args": {
                     "type": "array",
